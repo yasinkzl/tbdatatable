@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<title>Data Table</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="dt.css">
+		<script src="jquery-3.1.1.min.js" type="text/javascript"></script>
+		<script src="dt.js" type="text/javascript"></script>
+	</head>
+	<body>
+
+		<div id="dataTableSimple"></div>
+		<div id="dataTableXml"></div>
+		<div id="dataTableServer"></div>
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+				//Tablo verileri fonksiyon çaığırmada belirtildi.
+				$("#dataTableSimple").dataTable({
+					init:{
+						dataSource:[[1,"Yasin",30,"Ben"],[2,"Berken",1,"Oğlum"]]
+					},
+					header:{
+						title:"ÖZ AİLE TABLOSU"
+					},
+					content:{
+						columns:{
+							text:["ID","KİŞİ","YAŞI","YAKINLIĞI"]
+						}
+					}
+				});//*/
+				
+				//Tablo verileri XML dosyasından belirtildi.
+				$("#dataTableXml").dataTable({
+					init:{
+						dataXML:"data.xml",
+						css:{width:"500px"} // Datatable genişliği
+					},
+					header:{
+						title:"BÜYÜK AİLE TABLOSU",
+						search:true
+					},
+					content:{
+						columns:{
+							text:["ID","KİŞİ","YAŞI","YAKINLIĞI"],
+							id:true,
+							sort:true
+						}
+					}
+				});//*/
+
+				//Tablo verileri PHP-MYSQL sorgusundan belirtildi.
+				$("#dataTableServer").dataTable({
+					init:{
+						dataServer:"demo.php",
+						css:{width:"800px"} 
+					},
+					header:{
+						title:"ŞEHİR TABLOSU",
+						search:true
+					},
+					content:{
+						columns:{
+							text:["ID","Şehir","Ülke Kodu","Bölge","Nüfus"],
+							sort:true,
+							detail:{
+								ok:true,
+								link:"detail.php?id="
+							},
+							edit:{
+								ok:true,
+								link:"edit.php?id=",
+							},
+							delete:{
+								ok:true,
+								link:"delet.php?id="
+							}
+						}
+					}
+				});//*/
+			});
+		</script>
+	</body>
+</html>
