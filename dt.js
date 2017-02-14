@@ -2,7 +2,7 @@
 	$.fn.dataTable=function(options)
 	{ 
 		// Datatable ilk özellikler.	
-		var settigns=$.extend(true,{
+		var settings=$.extend(true,{
 			obj:this,// Obje. Çeşitli işlemlerde kullanılacak.
 			id:this.attr("id"),// Obje ID. Arama, sıralama ve sayfalama gibi işlemlerde kullanılacaktır.
 			// Tablo verileri xml dosyasından çağrıldı.
@@ -49,21 +49,21 @@
 		},$.fn.dataTable.defaults,options);
 		//Gösterilecek kayıtların kaynağı bakıkımında dataSource kaynağı belirlenmektedir
 		if(options.init.dataXML==null && options.init.dataServer==null){
-			settigns.init.dataTemp=settigns.init.dataSource;// dataSource veri dizisinin bir kopyası dataTemp dizisinde tutulsun. Örnek arama sonucundaki veri sıralama yapılsın veya sayfalansın.
-			createDatatable(settigns);
+			settings.init.dataTemp=settings.init.dataSource;// dataSource veri dizisinin bir kopyası dataTemp dizisinde tutulsun. Örnek arama sonucundaki veri sıralama yapılsın veya sayfalansın.
+			createDatatable(settings);
 		}
 		else if(options.init.dataXML!=null){
-			settigns.dataXML(function(data){
-				settigns.init.dataSource=data;// XML verisi gönderilirse datasource xml verisi ekle.
-				settigns.init.dataTemp=settigns.init.dataSource;
-				createDatatable(settigns);
+			settings.dataXML(function(data){
+				settings.init.dataSource=data;// XML verisi gönderilirse datasource xml verisi ekle.
+				settings.init.dataTemp=settings.init.dataSource;
+				createDatatable(settings);
 			},options.init.dataXML);
 		}
 		else if(options.init.dataServer!=null){
-			settigns.dataServer(function(data){
-				settigns.init.dataSource=data;// Sunucu taraflı veri ekle.
-				settigns.init.dataTemp=settigns.init.dataSource;
-				createDatatable(settigns);
+			settings.dataServer(function(data){
+				settings.init.dataSource=data;// Sunucu taraflı veri ekle.
+				settings.init.dataTemp=settings.init.dataSource;
+				createDatatable(settings);
 			},options.init.dataServer);
 		}
 	}
@@ -133,20 +133,20 @@
 		}
 	}
 
-	function createDatatable(settigns){
+	function createDatatable(settings){
 		// Seçeneklere göre Datatable özelik ekleme.
-		var show='<span>'+settigns.header.showText+'</span>';
+		var show='<span>'+settings.header.showText+'</span>';
 			show+='<select id="selShow">';
-		$.each(settigns.header.show,function(i,v){
+		$.each(settings.header.show,function(i,v){
 			show+='<option id="'+v+'">'+v+'</option>';
 		});
 		show+='</select>';
 		var search="";
-		if(settigns.header.search){
+		if(settings.header.search){
 			search+='<span>&#128270;</span>';
 			search+='<input type="text" id="txtSearch"></input>';
 			search+='<select id="selSearch"><option value="0">Tümü</option>';
-			$.each(settigns.content.columns.text,function(i,v){
+			$.each(settings.content.columns.text,function(i,v){
 				search+='<option value="'+(i+1)+'">'+v+'</option>';
 			});
 			search+='</select>';			
@@ -154,29 +154,29 @@
 		//Datatable oluşturulmaktadır.
 		var dataTable='<div class="main">'+
 				'<div class="header">'+
-					'<h1>'+settigns.header.title+'</h1>'+
+					'<h1>'+settings.header.title+'</h1>'+
 					(show.length>20 ? '<div class="show">'+show+'</div>':'')+
 					(search!='' ? '<div class="search">'+search+'</div>':'')+
 				'</div>'+
 			'</div>';
-		settigns.obj.append(dataTable);
-		settigns.obj.addClass(settigns.init.class);
-		settigns.obj.css(settigns.init.css);
-		createContent(settigns);// Dinamik veri kısmı createContent fonksiyonunda oluşturulmaktadır.
+		settings.obj.append(dataTable);
+		settings.obj.addClass(settings.init.class);
+		settings.obj.css(settings.init.css);
+		createContent(settings);// Dinamik veri kısmı createContent fonksiyonunda oluşturulmaktadır.
 		// Arama ve Filtreleme yap.
-		$("#"+settigns.id+" .search #txtSearch").keyup(function(){
-				searchTable(settigns,$(this).val(),$("#"+settigns.id+" .search #selSearch").val());
+		$("#"+settings.id+" .search #txtSearch").keyup(function(){
+				searchTable(settings,$(this).val(),$("#"+settings.id+" .search #selSearch").val());
 		});
 		// Sayfa gösterimi değişirse.
-		$("#"+settigns.id+" .show #selShow").on("change",function(){
-			createContent(settigns);
+		$("#"+settings.id+" .show #selShow").on("change",function(){
+			createContent(settings);
 		});
 	}
 	// Datatable veri ile ilgili kısmı bu fonksiyonda oluşturulmaktadır. Bu fonnksiyon şimdilik 3 yerde çağrılacaktır.
-	function createContent(settigns){
-		$("#"+settigns.id+" div[class=content]").remove();// Daha önce aynı Datatable veri(content) kısmı var ise sil. Bu işlem arama, sırala ve sayfalamada tekrar veri listelenmesini engeleyecek.
+	function createContent(settings){
+		$("#"+settings.id+" div[class=content]").remove();// Daha önce aynı Datatable veri(content) kısmı var ise sil. Bu işlem arama, sırala ve sayfalamada tekrar veri listelenmesini engeleyecek.
 		// Datatable kayıtlar ekleniyor.
-		var col=settigns.content.columns;// Sürekli uzun yazmak yerine col değişkenine atandı.
+		var col=settings.content.columns;// Sürekli uzun yazmak yerine col değişkenine atandı.
 		var th='';
 		$.each(col.text,function(i,v){
 			th+='<th class="'+(col.sort ? 'sort':'')+' c'+i+'">'+v+'</th>';// Sütun style sınıfına c+i eklendi. Her sütuna has özellikler olabilir. 
@@ -192,7 +192,7 @@
 		th+=(col.delete.ok ? '<th class="delete">'+col.delete.text+'</th>' :'');// Silme seçeneği kontrol
 		tf+=(col.delete.ok ? '<th class="delete">'+col.delete.text+'</th>' :'');
 		var tr='';
-		$.each(settigns.init.dataSource,function(i,row){
+		$.each(settings.init.dataSource,function(i,row){
 			tr+='<tr>';
 			$.each(row,function(j,field){
 				tr+='<td>'+field+'</td>';
@@ -206,25 +206,25 @@
 		(col.detail.ok ? colspan+=1:colspan=colspan);
 		(col.edit.ok ? colspan+=1:colspan=colspan);
 		(col.delete.ok ? colspan+=1:colspan=colspan);
-		tr=(tr.length>0 ? tr:'<tr><td style="text-align:center;font-size:15px;color:#c00" colspan="'+(col.text.length+colspan)+'">'+settigns.content.nodata+'</td></tr>');// Veri yoksa açıklama yaz.
+		tr=(tr.length>0 ? tr:'<tr><td style="text-align:center;font-size:15px;color:#c00" colspan="'+(col.text.length+colspan)+'">'+settings.content.nodata+'</td></tr>');// Veri yoksa açıklama yaz.
 		var pageCount=0;
 		// Sayfa sayyısı belirleniyor. Ve aynı gösterim değerine göre veriler sayfalara bölünüyor.
-		$.each(settigns.init.dataSource,function(i,v){
+		$.each(settings.init.dataSource,function(i,v){
 			if(i%($("#selShow option:selected").val())==0){// Seçili gösterim değeri bütün verinin kaçta kaçı.
 				pageCount++;
 			}
 		});
 		// Sayfalama oluştur. next-prev-last-1 2 3
 		var pagingTag="";
-		pagingTag+=(pageCount>2 ? '<a class="first" href="#">'+settigns.footer.page.first+'</a>':'');
-		pagingTag+=(pageCount>1 ? '<a class="prev" href="#">'+settigns.footer.page.prev+'</a>':'');
+		pagingTag+=(pageCount>2 ? '<a class="first" href="#">'+settings.footer.page.first+'</a>':'');
+		pagingTag+=(pageCount>1 ? '<a class="prev" href="#">'+settings.footer.page.prev+'</a>':'');
 		pagingTag+='<div class="pages"><span></span>';
 		for (var i = 1; i <= 3; i++) {// Sayfa sayısı 3 sayfadan fazlaysadiğer sayfa numaraları pagingRows fonksiyonunda gizlenecek.
 			pagingTag+=(pageCount>i ? '<a class="page p'+i+'" href="#">'+i+'</a>':'');
 		}
 		pagingTag+='<span></span></div>';
-		pagingTag+=(pageCount>1 ? '<a class="next" href="#">'+settigns.footer.page.next+'</a>':'');
-		pagingTag+=(pageCount>2 ? '<a class="last" href="#">'+settigns.footer.page.last+'</a>':'');
+		pagingTag+=(pageCount>1 ? '<a class="next" href="#">'+settings.footer.page.next+'</a>':'');
+		pagingTag+=(pageCount>2 ? '<a class="last" href="#">'+settings.footer.page.last+'</a>':'');
 		var content='<div class="content">'+
 			'<table class="data-table">'+
 				'<thead>'+
@@ -242,26 +242,26 @@
 				'<div class="paging">'+pagingTag+'</div>'+
 			'</div>'+
 		'</div>';
-		$("#"+settigns.id+" .main").append(content);
-		pagingRows(settigns);
+		$("#"+settings.id+" .main").append(content);
+		pagingRows(settings);
 		// Sütun bazlı sıralama yap.
-		$("#"+settigns.id+" .content table thead tr th").click(function(e){
+		$("#"+settings.id+" .content table thead tr th").click(function(e){
 			if(col.sort){
 				e.preventDefault();
-				var index=$("#"+settigns.id+" .content table thead tr th").index(this);
-				var css=$("#"+settigns.id+" .content table thead tr th:eq("+index+")").attr("class");
+				var index=$("#"+settings.id+" .content table thead tr th").index(this);
+				var css=$("#"+settings.id+" .content table thead tr th:eq("+index+")").attr("class");
 				if(css!="detail" && css!="edit" && css!="delete")// Detail, Edit ve Delete sütunları tıklanmadığında.
-					sortTable(index,settigns);
+					sortTable(index,settings);
 			}
 		});
 		// Sayfalama gösterimi
-		$("#"+settigns.id).find(".paging a").on("click",function(e){
+		$("#"+settings.id).find(".paging a").on("click",function(e){
 			e.preventDefault();
-			var index=$("#"+settigns.id+" .paging a").index(this);
-			var css=$("#"+settigns.id+" .paging a:eq("+index+")").attr("class");
+			var index=$("#"+settings.id+" .paging a").index(this);
+			var css=$("#"+settings.id+" .paging a:eq("+index+")").attr("class");
 			var paged=0;// Gösterimde olan sayfa numarası.
 			var page=0;//Gösterime girecek sayfa numarası
-			$("#"+settigns.id+" .paging .pages a").each(function(i,v){// Hangi sayfanın gösterimde olduğunu bul.
+			$("#"+settings.id+" .paging .pages a").each(function(i,v){// Hangi sayfanın gösterimde olduğunu bul.
 				if($(v).hasClass("paged")){
 					paged=parseInt($(v).text());
 					return false;
@@ -277,81 +277,81 @@
 			else if(css=="last")
 				page=pageCount;
 			else if(css!="next" && css!="prev")
-				page=parseInt($("#"+settigns.id+" .paging a:eq("+index+")").text());// String değer int çevrilmelidir. Yoksa 1+1=2 değilde 1+1=11 olarak hesaplar. Bu problem 4 saatimi aldı. 
+				page=parseInt($("#"+settings.id+" .paging a:eq("+index+")").text());// String değer int çevrilmelidir. Yoksa 1+1=2 değilde 1+1=11 olarak hesaplar. Bu problem 4 saatimi aldı. 
 			if(page!=0)// Yukarıdaki koşullar sağlandı ve yeni sayfa gösterimi yapılabilir.
-				pagingRows(settigns,page);
+				pagingRows(settings,page);
 		});
 	}
 	// Satırları gizle-göster. Bu fonksiyon altı yerde çağrılacaktır.
-	function pagingRows(settigns,page=1){
-		var show=$("#"+settigns.id+" #selShow option:selected").val();// Sayfada gösterim değeri.
-		$("#"+settigns.id+" table tbody tr").css("display","none");// Tüm satırları göster.
+	function pagingRows(settings,page=1){
+		var show=$("#"+settings.id+" #selShow option:selected").val();// Sayfada gösterim değeri.
+		$("#"+settings.id+" table tbody tr").css("display","none");// Tüm satırları göster.
 		var between=[];// Arasaı kaıyıtlar gösterildi bilgisini tutacak.
 		between[0]=(page-1)*show;
 		between[1]=between[0];
 		for (var i = (page-1)*show; i < page*show; i++) {// Belilerlenen sayfadaki kayıtlar gösterilecek.
-			if($("#"+settigns.id+" table tbody tr:eq("+i+")").length){
-				$("#"+settigns.id+" table tbody tr:eq("+i+")").css("display","table-row");
+			if($("#"+settings.id+" table tbody tr:eq("+i+")").length){
+				$("#"+settings.id+" table tbody tr:eq("+i+")").css("display","table-row");
 				between[1]++;
 			}
 		}
-		$("#"+settigns.id+" .info p").text(settigns.init.dataSource.length+settigns.footer.info.count+between[0]+'-'+between[1]+settigns.footer.info.between);// Kayıt bilgisi.
-		var pagesCount=Math.ceil(settigns.init.dataSource.length/show); // Sayfa sayısı ve bir üst sayıya yuvarlama yapılıyor.
-		$("#"+settigns.id+" .paging a").css("color","");// Sıfırla
-		$("#"+settigns.id+" .paging a").attr("href","#");// Sıfırla
+		$("#"+settings.id+" .info p").text(settings.init.dataSource.length+settings.footer.info.count+between[0]+'-'+between[1]+settings.footer.info.between);// Kayıt bilgisi.
+		var pagesCount=Math.ceil(settings.init.dataSource.length/show); // Sayfa sayısı ve bir üst sayıya yuvarlama yapılıyor.
+		$("#"+settings.id+" .paging a").css("color","");// Sıfırla
+		$("#"+settings.id+" .paging a").attr("href","#");// Sıfırla
 		if(page==1){// İlk sayfa gösterildiğinde prev ve first disable yap.
-			$("#"+settigns.id+" .paging .prev").attr("href",null);
-			$("#"+settigns.id+" .paging .prev").css("color","#bbb");
-			$("#"+settigns.id+" .paging .first").attr("href",null);
-			$("#"+settigns.id+" .paging .first").css("color","#bbb");
+			$("#"+settings.id+" .paging .prev").attr("href",null);
+			$("#"+settings.id+" .paging .prev").css("color","#bbb");
+			$("#"+settings.id+" .paging .first").attr("href",null);
+			$("#"+settings.id+" .paging .first").css("color","#bbb");
 		}
 		else if(page==pagesCount){ // Son sayfa gösterldiğinde next ve last disable yap.
-			$("#"+settigns.id+" .paging .next").attr("href",null);
-			$("#"+settigns.id+" .paging .next").css("color","#bbb");
-			$("#"+settigns.id+" .paging .last").attr("href",null);
-			$("#"+settigns.id+" .paging .last").css("color","#bbb");
+			$("#"+settings.id+" .paging .next").attr("href",null);
+			$("#"+settings.id+" .paging .next").css("color","#bbb");
+			$("#"+settings.id+" .paging .last").attr("href",null);
+			$("#"+settings.id+" .paging .last").css("color","#bbb");
 		} 
 		// 3 ten fazla sayfa varsa sayfa 3 sayfa numarası dışında diğerlerin yerine (...) nokta göster.
 		if(pagesCount>3){
-			$("#"+settigns.id+" .paging .pages a").removeClass();// Gösterim olmayacak sayfaların numarasını varsayılan yap.
+			$("#"+settings.id+" .paging .pages a").removeClass();// Gösterim olmayacak sayfaların numarasını varsayılan yap.
 			var pagesTag=0; // Sayfa numaraları ve ... oluştur.
-			$("#"+settigns.id+" .paging .pages span").text("");
+			$("#"+settings.id+" .paging .pages span").text("");
 			if(page==1){
 				pagesTag=page;
-				$("#"+settigns.id+" .paging .pages span:eq(1)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(1)").text("...");
 			}
 			else if(page==2){
 				pagesTag=page-1;
-				$("#"+settigns.id+" .paging .pages span:eq(1)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(1)").text("...");
 			}
 			else if(page==pagesCount-1){
 				pagesTag=page-1;
-				$("#"+settigns.id+" .paging .pages span:eq(0)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(0)").text("...");
 			}
 			else if(page==pagesCount){
 				pagesTag=page-2;
-				$("#"+settigns.id+" .paging .pages span:eq(0)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(0)").text("...");
 			}
 			else if(page>2 && page<pagesCount-1){
 				pagesTag=page;
-				$("#"+settigns.id+" .paging .pages span:eq(0)").text("...");
-				$("#"+settigns.id+" .paging .pages span:eq(1)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(0)").text("...");
+				$("#"+settings.id+" .paging .pages span:eq(1)").text("...");
 			}
 			for(var i=0;i<3;i++){// Seçilen sayfa numarası etrafında veya yanında iki numara daha text değerleri verildi.
-				$("#"+settigns.id+" .paging .pages a:eq("+i+")").text(pagesTag+i);
-				$("#"+settigns.id+" .paging .pages a:eq("+i+")").addClass("page p"+(pagesTag+i));
+				$("#"+settings.id+" .paging .pages a:eq("+i+")").text(pagesTag+i);
+				$("#"+settings.id+" .paging .pages a:eq("+i+")").addClass("page p"+(pagesTag+i));
 			}
-			$("#"+settigns.id+" .paging .p"+page).addClass("paged");//Hangi sayfanın gösterimde olduğunun belirleyici özeliği.
+			$("#"+settings.id+" .paging .p"+page).addClass("paged");//Hangi sayfanın gösterimde olduğunun belirleyici özeliği.
 		}
 	}
 	// Sütun bazlı sıralama fonksiyonu.
-	function sortTable(index,settigns){
-		var sorted=("#"+settigns.id+" .content table tr th:eq("+index+")");// Sıralama yapılacak sütun.
+	function sortTable(index,settings){
+		var sorted=("#"+settings.id+" .content table tr th:eq("+index+")");// Sıralama yapılacak sütun.
 		var asc=$(sorted).hasClass("sorted-asc");
 		var temp1=[];// Geçici bir dizi tanımlandı.
 		var temp2=[];		
 		// Uzun değişken adı yazmak yerine kısa temp1 dizisine veriler eklendi.
-		$.each(settigns.init.dataSource,function(i,v){
+		$.each(settings.init.dataSource,function(i,v){
 			temp1.push(v);
 			temp2.push(v);
 		});
@@ -385,22 +385,22 @@
 			}
 		}
 		// dataSource dizisi yeni hali
-		settigns.init.dataSource=[];
+		settings.init.dataSource=[];
 		$.each(temp1,function(i,v){
-			settigns.init.dataSource.push(v);
+			settings.init.dataSource.push(v);
 		});
 		// Var olan DataTable veri kısmını kaldır yerine yenisi oluştur.
-		createContent(settigns);
+		createContent(settings);
 		if(asc)// Sıralama yapılan sütunu belirle.
 			$(sorted).addClass("sorted-desc");
 		else
 			$(sorted).addClass("sorted-asc");
 	}
 	// Sütun bazlı sıralama fonksiyonu. Text Value, Option Value
-	function searchTable(settigns,tval,oval){
+	function searchTable(settings,tval,oval){
 		var temp=[];// Geçici dizi tanımlanıyor.			
 		if(tval.length>0){// Arama kutucuğuna en az 3 karekter girildiğinde dataSource güncelle.
-			$.each(settigns.init.dataSource,function(i,v){// Aramanın yapıldığı döngü.
+			$.each(settings.init.dataSource,function(i,v){// Aramanın yapıldığı döngü.
 				$.each(v,function(j,va){
 					if((oval==0 && va.match(tval)!=null) || (oval==j+1 && va.match(tval)!=null) ){
 						temp.push(v);// Arama metni ile eşleşen satırları temp disisine yükle.
@@ -409,11 +409,11 @@
 				});
 			});
 			// dataSource dizisi verilerini güncelle.
-			settigns.init.dataSource=temp;
+			settings.init.dataSource=temp;
 		}
 		else{
-			settigns.init.dataSource=settigns.init.dataTemp;// dataSource dizisinin verilerini geri yükle.
+			settings.init.dataSource=settings.init.dataTemp;// dataSource dizisinin verilerini geri yükle.
 		}
-		createContent(settigns);
+		createContent(settings);
 	}
 })($);
